@@ -1,10 +1,16 @@
 package models
 
 import (
-	"errors"
-	"gin-demo/app/config"
+	"crypto/sha256"
+	"encoding/base64"
+	"fmt"
+	"log"
+	"math/rand"
+	"strings"
+	"time"
 
 	"github.com/jinzhu/gorm"
+	"golang.org/x/crypto/pbkdf2"
 )
 
 //PaginationQ gin handler query binding struct
@@ -62,22 +68,53 @@ func crudAll(p *PaginationQ, queryTx *gorm.DB, list interface{}) (uint, error) {
 	return total, err
 }
 
-func crudOne(m interface{}) (err error) {
-	if config.DB.First(m).RecordNotFound() {
-		return errors.New("resource is not found")
+// 随机生成指定位数的大写字母和数字的组合
+func RandStr(length int) string {
+	str := "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	bytes := []byte(str)
+	result := []byte{}
+	rand.Seed(time.Now().UnixNano() + int64(rand.Intn(100)))
+	for i := 0; i < length; i++ {
+		result = append(result, bytes[rand.Intn(len(bytes))])
 	}
-	return nil
+	return string(result)
 }
 
-func crudDelete(m interface{}) (err error) {
-	//WARNING When delete a record, you need to ensure it’s primary field has value, and GORM will use the primary key to delete the record, if primary field’s blank, GORM will delete all records for the model
-	//primary key must be not zero value
-	db := config.DB.Unscoped().Delete(m)
-	if err = db.Error; err != nil {
-		return
+//实现Django的加密
+func encode(password string) string {
+	algorithm := "pbkdf2_sha256" // 算法
+	salt := []byte(RandStr(12))  // 盐，是一个随机字符串，每一个用户都不一样
+	iterations := 260000         // 加密算法的迭代次数，15000 次
+	digest := sha256.New         // digest 算法，使用 sha256
+	fmt.Println("salt：" + string(salt))
+	// 第一步：使用 pbkdf2 算法加密
+	dk := pbkdf2.Key([]byte(password), salt, iterations, 32, digest)
+	log.Println("dk：" + fmt.Sprintf("%x", dk))
+	// log.Println("dk2：" + hex.EncodeToString(dk))
+
+	// 第二步：Base64 编码
+	base64 := base64.StdEncoding.EncodeToString(dk)
+	log.Println("base64：" + base64)
+
+	// 第三步：组合加密算法、迭代次数、盐、密码和分割符号 "$"
+	pwd := fmt.Sprintf(
+		"%s$%d$%s$%s",
+		algorithm,
+		iterations,
+		string(salt),
+		base64,
+	)
+	return string(pwd)
+}
+
+func decode(encoded string) map[string]string {
+	str := "pbkdf2_sha256$216000$5uyVOJLx8oZK$cv6ayMeUUBiu8g8KXuBVyb+BVfdbiH8/FTGBoYBaICQ="
+	split := strings.Split(str, "$")
+	textMap := map[string]string{
+		"algorithm":  split[0],
+		"iterations": split[1],
+		"salt":       split[2],
+		"hash":       split[3],
 	}
-	if db.RowsAffected != 1 {
-		return errors.New("resource is not found to destroy")
-	}
-	return nil
+	return textMap
 }

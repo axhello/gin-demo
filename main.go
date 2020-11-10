@@ -6,6 +6,8 @@ import (
 	"gin-demo/app/config"
 	"gin-demo/app/models"
 	"gin-demo/app/router"
+	"math/rand"
+	"time"
 
 	"github.com/jinzhu/gorm"
 )
@@ -24,4 +26,9 @@ func main() {
 	r := router.SetupRouter()
 	//running
 	r.Run(":8090")
+
+}
+
+func init() {
+	rand.Seed(time.Now().UnixNano())
 }
