@@ -64,10 +64,14 @@ func (u *User) CreateUser() (user *User, err error) {
 	// if err = u.Encrypt(); err != nil {
 	// 	return
 	// }
-	u.Password = encode(u.Password)
+	pwd, err := makePassword([]byte(u.Password))
+	if err != nil {
+		err = errors.New("密码加密失败！")
+		return
+	}
+	u.Password = string(pwd)
 	u.Slug = RandStr(10)
 	u.Sex = "0"
-	fmt.Println(decode(u.Password))
 	fmt.Println(u)
 	// check 用户名
 	var count int64

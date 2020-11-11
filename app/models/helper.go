@@ -1,16 +1,11 @@
 package models
 
 import (
-	"crypto/sha256"
-	"encoding/base64"
-	"fmt"
-	"log"
 	"math/rand"
-	"strings"
 	"time"
 
 	"github.com/jinzhu/gorm"
-	"golang.org/x/crypto/pbkdf2"
+	"golang.org/x/crypto/bcrypt"
 )
 
 //PaginationQ gin handler query binding struct
@@ -80,41 +75,12 @@ func RandStr(length int) string {
 	return string(result)
 }
 
-//实现Django的加密
-func encode(password string) string {
-	algorithm := "pbkdf2_sha256" // 算法
-	salt := []byte(RandStr(12))  // 盐，是一个随机字符串，每一个用户都不一样
-	iterations := 260000         // 加密算法的迭代次数，15000 次
-	digest := sha256.New         // digest 算法，使用 sha256
-	fmt.Println("salt：" + string(salt))
-	// 第一步：使用 pbkdf2 算法加密
-	dk := pbkdf2.Key([]byte(password), salt, iterations, 32, digest)
-	log.Println("dk：" + fmt.Sprintf("%x", dk))
-	// log.Println("dk2：" + hex.EncodeToString(dk))
-
-	// 第二步：Base64 编码
-	base64 := base64.StdEncoding.EncodeToString(dk)
-	log.Println("base64：" + base64)
-
-	// 第三步：组合加密算法、迭代次数、盐、密码和分割符号 "$"
-	pwd := fmt.Sprintf(
-		"%s$%d$%s$%s",
-		algorithm,
-		iterations,
-		string(salt),
-		base64,
-	)
-	return string(pwd)
+//Make 加密方法
+func makePassword(password []byte) ([]byte, error) {
+	return bcrypt.GenerateFromPassword(password, bcrypt.DefaultCost)
 }
 
-func decode(encoded string) map[string]string {
-	str := "pbkdf2_sha256$216000$5uyVOJLx8oZK$cv6ayMeUUBiu8g8KXuBVyb+BVfdbiH8/FTGBoYBaICQ="
-	split := strings.Split(str, "$")
-	textMap := map[string]string{
-		"algorithm":  split[0],
-		"iterations": split[1],
-		"salt":       split[2],
-		"hash":       split[3],
-	}
-	return textMap
-}
+// //Check 检查方法
+// func checkPassword(hashedPassword, password []byte) error {
+// 	return bcrypt.CompareHashAndPassword(hashedPassword, password)
+// }
