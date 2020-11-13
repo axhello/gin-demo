@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/jinzhu/gorm"
-	"golang.org/x/crypto/bcrypt"
 )
 
 //PaginationQ gin handler query binding struct
@@ -65,7 +64,7 @@ func crudAll(p *PaginationQ, queryTx *gorm.DB, list interface{}) (uint, error) {
 
 // 随机生成指定位数的大写字母和数字的组合
 func RandStr(length int) string {
-	str := "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	str := "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 	bytes := []byte(str)
 	result := []byte{}
 	rand.Seed(time.Now().UnixNano() + int64(rand.Intn(100)))
@@ -76,9 +75,9 @@ func RandStr(length int) string {
 }
 
 //Make 加密方法
-func makePassword(password []byte) ([]byte, error) {
-	return bcrypt.GenerateFromPassword(password, bcrypt.DefaultCost)
-}
+// func makePassword(password []byte) ([]byte, error) {
+// 	return bcrypt.GenerateFromPassword(password, bcrypt.DefaultCost)
+// }
 
 // //Check 检查方法
 // func checkPassword(hashedPassword, password []byte) error {

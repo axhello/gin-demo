@@ -21,8 +21,8 @@ import (
 //		salt		: 盐
 //		iterations	: 迭代次数
 func Encode(password string, salt string, iterations int) (string, error) {
-	algorithm := "pbkdf2_sha256"
 	// 一共三个参数，分别是原始密码、盐、迭代次数
+	algorithm := "pbkdf2_sha256"
 
 	// 如果没有设置盐，则使用12位的随机字符串
 	if strings.TrimSpace(salt) == "" {
