@@ -3,6 +3,7 @@ package models
 import (
 	"errors"
 	"fmt"
+	password "gin-demo/app/helper"
 
 	"gin-demo/app/config"
 )
@@ -64,7 +65,7 @@ func (u *User) CreateUser() (user *User, err error) {
 	// if err = u.Encrypt(); err != nil {
 	// 	return
 	// }
-	pwd, err := makePassword([]byte(u.Password))
+	pwd, err := password.Encode(u.Password, "", 0)
 	if err != nil {
 		err = errors.New("密码加密失败！")
 		return
