@@ -13,7 +13,7 @@ type UserId struct {
 }
 
 type PassWord struct {
-	Password string `json:"password"`
+	Password string `json:"-"`
 }
 
 type UserInfo struct {

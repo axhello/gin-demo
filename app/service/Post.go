@@ -19,7 +19,7 @@ func GetAllPost(post *[]models.Post) (err error) {
 
 //GetPostByID ... Fetch only one user by Id
 func GetPostByID(post *models.Post, id string) (err error) {
-	if err = config.DB.Where("id = ?", id).Preload("Author").First(&post).Error; err != nil {
+	if err = config.DB.Where("id = ?", id).First(&post).Error; err != nil {
 		return err
 	}
 	return nil

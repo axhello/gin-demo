@@ -4,10 +4,31 @@ import (
 	"net/http"
 
 	"gin-demo/app/models"
-	"gin-demo/app/service"
 
 	"github.com/gin-gonic/gin"
 )
+
+func GetXml(c *gin.Context) {
+	id := c.Params.ByName("id")
+	query := &models.Post{}
+	post, err := query.GetPostWithPanoramaById(id)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"code":    http.StatusNotFound,
+			"status":  "error",
+			"message": "data not found",
+		})
+	} else {
+		// c.JSON(http.StatusOK, post)
+		site_media_url := "http://localhost:8000/media"
+		c.Header("Content-Type", "application/xml")
+		c.HTML(http.StatusOK, "normal.xml", gin.H{
+			"site_media_url": site_media_url,
+			"post":           post,
+		})
+	}
+
+}
 
 //GetPosts ... Get all users
 func GetPosts(c *gin.Context) {
@@ -44,8 +65,8 @@ func GetPosts(c *gin.Context) {
 //GetPostByID ... Get the user by id
 func GetPostByID(c *gin.Context) {
 	id := c.Params.ByName("id")
-	var post models.Post
-	err := service.GetPostByID(&post, id)
+	query := &models.Post{}
+	post, err := query.GetPostById(id)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
 			"code":    http.StatusNotFound,

@@ -1,0 +1,112 @@
+
+
+<krpano version="1.18" title="Virtual Tour" onstart="startup();">
+    <include url="%SWFPATH%/plugins/webvr.xml"/>
+    <plugin name="WebVR" mobilevr_fake_support="true"/>
+    <preview url="{{ .site_media_url }}/panos/{{ .post.Panorama.Slug }}/preview.jpg" />
+	<image>
+		<cube url="{{ .site_media_url }}/panos/{{ .post.Panorama.Slug }}/pano_%s.jpg" />
+	</image>
+    <view stereographic="true" fisheye="1.0" fov="125" fovtype="VFOV" hlookat="0" vlookat="90" maxpixelzoom="1.0"/>
+    <security cors="anonymous">
+        <allowdomain domain="*"/>
+    </security>
+    <autorotate enabled="true" waittime="1.5" speed="{{ .post.AutorotateSpeed }}"/>
+    <action name="startup">
+    </action>
+    <events onloadcomplete="delayedcall(1.0, normalview());"/>
+    <action name="normalview">
+        tween(view.hlookat, 0, 2.5, easeInOutQuad);
+        tween(view.vlookat, 0, 2.5, easeInOutQuad);
+        tween(view.fov, 60, 2.5, easeInOutQuad);
+        tween(view.fisheye, 0.0, 2.5, easeInOutQuad);
+        delayedcall(2.5, set(view.fovmax, 100));
+        wait(2.5);
+    </action>
+    <gyro enabled="0" devices="ios"/>
+    <plugin name="gyro" devices="html5" url="%SWFPATH%/plugins/gyro2.js" enabled="true" camroll="true" friction="0.2"
+            velastic="0.1"/>
+    <action name="setGyro">switch(plugin[gyro].enabled);</action>
+    <events onclick="setGyro();"/>
+    <control keycodesin="" keycodesout=""/>
+
+    <contextmenu>
+        <item name="kr" caption="KRPANO"/>
+        <item name="fs" caption="FULLSCREEN"/>
+        <item name="cc" caption="Change ControlMode" onclick="cm_changecontrolmode();" separator="true"/>
+        <item name="nv" caption="Normal View" onclick="cm_normal_view();" showif="view.vlookatrange == 180"
+              separator="true"/>
+        <item name="fv" caption="Fisheye View" onclick="cm_fisheye_view();" showif="view.vlookatrange == 180"
+              devices="flash|webgl"/>
+        <item name="sv" caption="Stereographic View" onclick="cm_stereographic_view();" showif="view.vlookatrange == 180" devices="flash|webgl" />
+        <item name="lp" caption="Little Planet View" onclick="cm_littleplanet_view();" showif="view.vlookatrange == 180"
+              devices="flash|webgl"/>
+    </contextmenu>
+    <action name="cm_changecontrolmode">
+        switch(control.mouse, moveto, drag);
+        switch(control.touch, moveto, drag);
+    </action>
+    <action name="cm_autorotate">switch(autorotate.enabled);</action>
+    <action name="cm_look_straight">
+        if(view.vlookat LT -80 OR view.vlookat GT +80,
+        tween(view.vlookat, 0.0, 1.0, easeInOutSine);
+        tween(view.fov, 100, distance(150,0.8));
+        );
+    </action>
+    <action name="cm_normal_view">
+        cm_look_straight();
+        tween(view.architectural, 0.0, distance(1.0,0.5));
+        tween(view.pannini, 0.0, distance(1.0,0.5));
+        tween(view.fisheye, 0.0, distance(1.0,0.5));
+        set(view.fovmax, 100);
+    </action>
+    <action name="cm_fisheye_view">
+        cm_look_straight();
+        tween(view.architectural, 0.0, distance(1.0,0.5));
+        tween(view.pannini, 0.0, distance(1.0,0.5));
+        tween(view.fisheye, 0.35, distance(1.0,0.5));
+    </action>
+    <action name="cm_stereographic_view">
+        cm_look_straight();
+        tween(view.architectural, 0.0, distance(1.0,0.5));
+        tween(view.pannini, 0.0, distance(1.0,0.5));
+        tween(view.fisheye, 1.0, distance(1.0,0.8));
+    </action>
+    <action name="cm_architectural_view">
+        cm_look_straight();
+        tween(view.architectural, 1.0, distance(1.0,0.5));
+        tween(view.pannini, 0.0, distance(1.0,0.5));
+        tween(view.fisheye, 0.0, distance(1.0,0.5));
+    </action>
+    <action name="cm_pannini_view">
+        cm_look_straight();
+        tween(view.architectural, 0.0, distance(1.0,0.5));
+        tween(view.pannini, 1.0, distance(1.0,0.8));
+        if(view.fisheye LT 0.1,
+        tween(view.fisheye, 1.0, distance(1.0,0.8));
+        );
+    </action>
+    <action name="cm_littleplanet_view">
+        set(view.fovmax, 150);
+        tween(view.architectural, 0.0, distance(1.0,0.5));
+        tween(view.pannini, 0.0, distance(1.0,0.5));
+        tween(view.fisheye, 0.8, distance(1.0,0.8));
+        tween(view.fov, 125, distance(150,0.8));
+        tween(view.vlookat, 90, distance(100,0.8));
+        add(new_hlookat, view.hlookat, 90);
+        tween(view.hlookat, get(new_hlookat), distance(100,0.8));
+    </action>
+    <events name="buttonbarevents" keep="true" devices="fullscreensupport"
+            onxmlcomplete="buttonbar_update_fullscreenbuttons();"
+            onenterfullscreen="buttonbar_update_fullscreenbuttons();"
+            onexitfullscreen="buttonbar_update_fullscreenbuttons();"/>
+    <action name="buttonbar_update_fullscreenbuttons">
+        if(fullscreen,
+        set(layer[ofico].visible,false);
+        set(layer[cfico].visible,true);
+        ,
+        set(layer[ofico].visible,true);
+        set(layer[cfico].visible,false);
+        );
+    </action>
+</krpano>

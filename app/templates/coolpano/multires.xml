@@ -1,0 +1,37 @@
+<krpano>
+
+	<!-- the skin -->
+{#	<include url="defaultskin.xml" />#}
+    {% include './defaultskin.xml' %}
+
+	<!-- view settings -->
+    {% if post.asteroid_entry %}
+        <view stereographic="true" fisheye="1.0" fov="125" fovtype="VFOV" hlookat="0" vlookat="90" maxpixelzoom="1.0"/>
+        <events onloadcomplete="delayedcall(1.0, normalview());"/>
+        <action name="normalview">
+            tween(view.hlookat, 0, 2.5, easeInOutQuad);
+            tween(view.vlookat, 0, 2.5, easeInOutQuad);
+            tween(view.fov, 60, 2.5, easeInOutQuad);
+            tween(view.fisheye, 0.0, 2.5, easeInOutQuad);
+            delayedcall(2.5, set(view.fovmax, 100));
+            wait(2.5);
+        </action>
+    {% else %}
+        <view hlookat="0" vlookat="0" maxpixelzoom="1.0" fovmax="150" limitview="auto" />
+    {% endif %}
+
+	<preview url="{{ site_media_url }}/panos/{{ post.panorama.slug }}/preview.jpg" />
+
+	<image type="CUBE" multires="true" tilesize="512">
+        <level tiledimagewidth="512" tiledimageheight="512">
+			<cube url="{{ site_media_url }}/panos/{{ post.panorama.slug }}/%s/l3/%v/l3_%s_%v_%h.jpg" />
+		</level>
+		<level tiledimagewidth="1024" tiledimageheight="1024">
+			<cube url="{{ site_media_url }}/panos/{{ post.panorama.slug }}/%s/l2/%v/l2_%s_%v_%h.jpg" />
+		</level>
+		<level tiledimagewidth="2048" tiledimageheight="2048">
+			<cube url="{{ site_media_url }}/panos/{{ post.panorama.slug }}/%s/l1/%v/l1_%s_%v_%h.jpg" />
+		</level>
+	</image>
+
+</krpano>
