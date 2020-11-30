@@ -18,14 +18,14 @@ func GetUsers(c *gin.Context) {
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{
 			"code":    http.StatusNotFound,
-			"status":  "error",
-			"message": "Not Found!",
+			"success": false,
+			"message": err.Error(),
 		})
 	} else {
 		c.AbortWithStatusJSON(http.StatusOK, gin.H{
-			"code":   http.StatusOK,
-			"status": "success",
-			"data":   list,
+			"code":    http.StatusOK,
+			"success": true,
+			"data":    list,
 		})
 	}
 }
@@ -36,7 +36,7 @@ func CreateUser(c *gin.Context) {
 	if err := c.BindJSON(&user); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"code":    http.StatusBadRequest,
-			"status":  "error",
+			"success": false,
 			"message": "非法数据格式",
 		})
 		return
@@ -45,14 +45,14 @@ func CreateUser(c *gin.Context) {
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"code":    http.StatusBadRequest,
-			"status":  "error",
+			"success": false,
 			"message": err.Error(),
 		})
 	} else {
 		c.AbortWithStatusJSON(http.StatusOK, gin.H{
-			"code":   http.StatusOK,
-			"status": "success",
-			"data":   list,
+			"code":    http.StatusOK,
+			"success": true,
+			"data":    list,
 		})
 	}
 }
@@ -65,14 +65,14 @@ func GetUserByID(c *gin.Context) {
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{
 			"code":    http.StatusNotFound,
-			"status":  "error",
-			"message": "Not Found!",
+			"success": false,
+			"message": err.Error(),
 		})
 	} else {
 		c.AbortWithStatusJSON(http.StatusOK, gin.H{
-			"code":   http.StatusOK,
-			"status": "success",
-			"data":   list,
+			"code":    http.StatusOK,
+			"success": true,
+			"data":    list,
 		})
 	}
 }

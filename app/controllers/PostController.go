@@ -15,8 +15,8 @@ func GetXml(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
 			"code":    http.StatusNotFound,
-			"status":  "error",
-			"message": "data not found",
+			"success": false,
+			"message": err.Error(),
 		})
 	} else {
 		// c.JSON(http.StatusOK, post)
@@ -54,11 +54,11 @@ func GetPosts(c *gin.Context) {
 	}
 	//返回数据开始拼装分页json
 	c.AbortWithStatusJSON(http.StatusOK, gin.H{
-		"status": "success",
-		"data":   list,
-		"total":  total,
-		"page":   query.Page,
-		"size":   query.Size,
+		"success": true,
+		"data":    list,
+		"total":   total,
+		"page":    query.Page,
+		"size":    query.Size,
 	})
 }
 
@@ -70,8 +70,8 @@ func GetPostByID(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
 			"code":    http.StatusNotFound,
-			"status":  "error",
-			"message": "data not found",
+			"success": false,
+			"message": err.Error(),
 		})
 	} else {
 		// fmt.Println(append(post, {"test": "user"}))
@@ -87,8 +87,8 @@ func PhotosView(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
 			"code":    http.StatusNotFound,
-			"status":  "error",
-			"message": "data not found",
+			"success": false,
+			"message": err.Error(),
 		})
 	} else {
 		// fmt.Println(append(post, {"test": "user"}))

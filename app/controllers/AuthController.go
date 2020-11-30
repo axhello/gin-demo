@@ -17,7 +17,7 @@ func LoginView(c *gin.Context) {
 	if err := c.ShouldBind(&login); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"code":    http.StatusBadRequest,
-			"status":  "error",
+			"success": false,
 			"message": "无效的参数",
 		})
 		return
@@ -27,7 +27,7 @@ func LoginView(c *gin.Context) {
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"code":    http.StatusBadRequest,
-			"status":  "error",
+			"success": false,
 			"message": "用户名错误或者不存在",
 		})
 		return
@@ -38,15 +38,15 @@ func LoginView(c *gin.Context) {
 		// 生成Token
 		tokenString, _ := token.GenerateToken(user.Username, 3*24*time.Hour)
 		c.AbortWithStatusJSON(http.StatusOK, gin.H{
-			"code":   http.StatusOK,
-			"status": "success",
-			"data":   gin.H{"token": tokenString},
+			"code":    http.StatusOK,
+			"success": true,
+			"data":    gin.H{"token": tokenString},
 		})
 		return
 	} else {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"code":    http.StatusBadRequest,
-			"status":  "error",
+			"success": false,
 			"message": "密码错误",
 		})
 		return
