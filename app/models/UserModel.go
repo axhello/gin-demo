@@ -13,7 +13,7 @@ type UserId struct {
 }
 
 type PassWord struct {
-	Password string `json:"-"`
+	Password string `json:"password"`
 }
 
 type UserInfo struct {
@@ -37,7 +37,7 @@ type LoginM struct {
 
 type UserView struct {
 	UserId
-	LoginM
+	Username string `json:"username"`
 	UserInfo
 }
 
@@ -88,12 +88,12 @@ func (u *User) CreateUser() (user *User, err error) {
 }
 
 //GetUserByID ... Fetch only one user by Id
-func (u *User) GetUserByID(id string) (user *User, err error) {
-	user = &User{}
-	if err = config.DB.Where("id = ?", id).First(&user).Error; err != nil {
+func (u *User) GetUserByID(id string) (UserView UserView, err error) {
+	// user = &User{}
+	if err = config.DB.Table(u.TableName()).Where("id = ?", id).First(&UserView).Error; err != nil {
 		return
 	}
-	return user, err
+	return UserView, err
 }
 
 //GetUserByName ... Fetch only one user by username

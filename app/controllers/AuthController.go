@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"fmt"
+	password "gin-demo/app/helper"
 	token "gin-demo/app/helper"
 	"gin-demo/app/models"
 	"net/http"
@@ -25,11 +25,16 @@ func LoginView(c *gin.Context) {
 	// 将用户传入的用户名和密码和数据库中的进行比对
 	user, err := query.GetUserByName(login.Username)
 	if err != nil {
-		fmt.Println("get user from db by name error")
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"code":    http.StatusBadRequest,
+			"status":  "error",
+			"message": "用户名错误或者不存在",
+		})
 		return
 	}
-	// 校验用户名和密码是否正确
-	if user.Username == "q1mi" {
+	// 校验密码
+	verified, _ := password.Verify(login.Password, user.Password)
+	if verified {
 		// 生成Token
 		tokenString, _ := token.GenerateToken(user.Username, 3*24*time.Hour)
 		c.AbortWithStatusJSON(http.StatusOK, gin.H{
@@ -38,9 +43,13 @@ func LoginView(c *gin.Context) {
 			"data":   gin.H{"token": tokenString},
 		})
 		return
+	} else {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"code":    http.StatusBadRequest,
+			"status":  "error",
+			"message": "密码错误",
+		})
+		return
 	}
-	c.AbortWithStatusJSON(http.StatusOK, gin.H{
-		"code": 2002,
-		"msg":  "鉴权失败",
-	})
+
 }
