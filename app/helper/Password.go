@@ -1,4 +1,4 @@
-package password
+package helper
 
 import (
 	"bytes"
@@ -14,6 +14,20 @@ import (
 
 	"golang.org/x/crypto/pbkdf2"
 )
+
+//CreateRandomString 随机字符串生成函数（不深入讨论）
+func CreateRandomString(len int) string {
+	var container string
+	var str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
+	b := bytes.NewBufferString(str)
+	length := b.Len()
+	bigInt := big.NewInt(int64(length))
+	for i := 0; i < len; i++ {
+		randomInt, _ := rand.Int(rand.Reader, bigInt)
+		container += string(str[randomInt.Int64()])
+	}
+	return container
+}
 
 //PasswordEncode 密码加密
 //参数：
@@ -47,20 +61,6 @@ func Encode(password string, salt string, iterations int) (string, error) {
 
 	// 最终字符串拼接成pbkdf2_sha256密钥格式
 	return fmt.Sprintf("%s$%d$%s$%s", algorithm, iterations, salt, b64Hash), nil
-}
-
-//CreateRandomString 随机字符串生成函数（不深入讨论）
-func CreateRandomString(len int) string {
-	var container string
-	var str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
-	b := bytes.NewBufferString(str)
-	length := b.Len()
-	bigInt := big.NewInt(int64(length))
-	for i := 0; i < len; i++ {
-		randomInt, _ := rand.Int(rand.Reader, bigInt)
-		container += string(str[randomInt.Int64()])
-	}
-	return container
 }
 
 //PasswordVerify 密码校验

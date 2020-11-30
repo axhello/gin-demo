@@ -2,6 +2,7 @@ package router
 
 import (
 	"gin-demo/app/controllers"
+	"gin-demo/app/middleware"
 	"os"
 	"path/filepath"
 
@@ -14,6 +15,11 @@ func SetupRouter() *gin.Engine {
 	r.LoadHTMLFiles(filepath.Join(os.Getenv("GOPATH"), "src/gin-demo/app/templates/coolpano/normal.xml"))
 	v1 := r.Group("/api/v1")
 	{
+		// AuthController
+		v1.GET("/auth/login", controllers.LoginView)
+		v1.GET("/auth/signup", controllers.GetUsers)
+		v1.GET("/auth/logout", controllers.GetUsers)
+
 		// UserController
 		v1.GET("/user", controllers.GetUsers)
 		v1.POST("/user", controllers.CreateUser)
@@ -21,9 +27,12 @@ func SetupRouter() *gin.Engine {
 		v1.PUT("/user/:id", controllers.UpdateUser)
 		v1.DELETE("/user/:id", controllers.DeleteUser)
 		// PostController
-		v1.GET("/xml/:id", controllers.GetXml)
+		v1.GET("/xml/:id", middleware.JWTAuthMiddleware(), controllers.GetXml)
 		v1.GET("/posts", controllers.GetPosts)
 		v1.GET("/post/:id", controllers.GetPostByID)
+		v1.GET("/photos/:slug", controllers.PhotosView)
+		v1.GET("/videos/:slug", controllers.GetPostByID)
+		v1.GET("/photo-360s/:slug", controllers.GetPostByID)
 	}
 	return r
 }

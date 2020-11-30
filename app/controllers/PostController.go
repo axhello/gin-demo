@@ -78,3 +78,20 @@ func GetPostByID(c *gin.Context) {
 		c.JSON(http.StatusOK, post)
 	}
 }
+
+//PhotosView
+func PhotosView(c *gin.Context) {
+	slug := c.Params.ByName("slug")
+	query := &models.Post{}
+	post, err := query.GetPostPhotoBySlug(slug)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"code":    http.StatusNotFound,
+			"status":  "error",
+			"message": "data not found",
+		})
+	} else {
+		// fmt.Println(append(post, {"test": "user"}))
+		c.JSON(http.StatusOK, post)
+	}
+}
