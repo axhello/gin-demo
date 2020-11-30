@@ -16,12 +16,12 @@ func SetupRouter() *gin.Engine {
 	v1 := r.Group("/api/v1")
 	{
 		// AuthController
-		v1.GET("/auth/login", controllers.LoginView)
-		v1.GET("/auth/signup", controllers.GetUsers)
-		v1.GET("/auth/logout", controllers.GetUsers)
+		v1.POST("/auth/login", controllers.LoginView)
+		v1.POST("/auth/signup", controllers.GetUsers)
+		v1.POST("/auth/logout", controllers.GetUsers)
 
 		// UserController
-		v1.GET("/user", controllers.GetUsers)
+		v1.GET("/users", controllers.GetUsers)
 		v1.POST("/user", controllers.CreateUser)
 		v1.GET("/user/:id", controllers.GetUserByID)
 		v1.PUT("/user/:id", controllers.UpdateUser)

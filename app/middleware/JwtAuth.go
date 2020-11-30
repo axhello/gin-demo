@@ -17,8 +17,8 @@ func JWTAuthMiddleware() func(c *gin.Context) {
 		authHeader := c.Request.Header.Get("Authorization")
 		if authHeader == "" {
 			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-				"code": 401,
-				"msg":  "请求头中auth为空",
+				"code":    http.StatusBadRequest,
+				"message": "请求头中auth为空",
 			})
 			return
 		}
@@ -26,22 +26,22 @@ func JWTAuthMiddleware() func(c *gin.Context) {
 		parts := strings.SplitN(authHeader, " ", 2)
 		if !(len(parts) == 2 && parts[0] == "Bearer") {
 			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-				"code": 401,
-				"msg":  "请求头中auth格式有误",
+				"code":    http.StatusBadRequest,
+				"message": "请求头中auth格式有误",
 			})
 			return
 		}
 		// parts[1]是获取到的tokenString，我们使用之前定义好的解析JWT的函数来解析它
 		mc, err := token.ParseToken(parts[1])
 		if err != nil {
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-				"code": 401,
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+				"code": http.StatusUnauthorized,
 				"msg":  "无效的Token",
 			})
 			return
 		}
 		// 将当前请求的username信息保存到请求的上下文c上
-		c.Set("username", mc.Uid)
+		c.Set("username", mc.Username)
 		c.Next() // 后续的处理函数可以用过c.Get("username")来获取当前请求的用户信息
 	}
 }

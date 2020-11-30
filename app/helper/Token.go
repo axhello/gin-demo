@@ -7,18 +7,19 @@ import (
 	jwt "github.com/dgrijalva/jwt-go"
 )
 
-const SecretKey = "243223ffslsfsldfl412fdsfsdf"
+// 私钥
+const SecretKey = "cs)jss8_%84r6%-*p1y_nj@b4&oukfpoo+^p)x3*a6nkq7s*1d"
 
 type UserClaims struct {
-	Uid string
+	Username string `json:"username"`
 	jwt.StandardClaims
 }
 
-func GenerateToken(uid string, role int, expireDuration time.Duration) (string, error) {
+func GenerateToken(username string, expireDuration time.Duration) (string, error) {
 	expire := time.Now().Add(expireDuration)
 	// 将 uid，用户角色， 过期时间作为数据写入 token 中
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, UserClaims{
-		Uid: uid,
+		Username: username,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expire.Unix(),
 		},

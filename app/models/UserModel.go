@@ -96,6 +96,15 @@ func (u *User) GetUserByID(id string) (user *User, err error) {
 	return user, err
 }
 
+//GetUserByName ... Fetch only one user by username
+func (u *User) GetUserByName(username string) (user *User, err error) {
+	user = &User{}
+	if err = config.DB.Table(u.TableName()).Where("username = ?", username).First(&user).Error; err != nil {
+		return
+	}
+	return user, err
+}
+
 //UpdateUser ... Update user
 func (u *User) UpdateUser(id string) (user *User, err error) {
 	// config.DB.Save(user)
