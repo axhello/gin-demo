@@ -3,6 +3,7 @@ package controllers
 import (
 	"net/http"
 
+	response "gin-demo/app/helper"
 	"gin-demo/app/models"
 	"gin-demo/app/service"
 
@@ -16,17 +17,9 @@ func GetUsers(c *gin.Context) {
 	user := &models.User{}
 	list, err := user.GetAllUsers()
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{
-			"code":    http.StatusNotFound,
-			"success": false,
-			"message": err.Error(),
-		})
+		response.JSON(c, http.StatusNotFound, false, err.Error())
 	} else {
-		c.AbortWithStatusJSON(http.StatusOK, gin.H{
-			"code":    http.StatusOK,
-			"success": true,
-			"data":    list,
-		})
+		response.JSON(c, http.StatusOK, true, list)
 	}
 }
 
@@ -34,26 +27,14 @@ func GetUsers(c *gin.Context) {
 func CreateUser(c *gin.Context) {
 	var user models.User
 	if err := c.BindJSON(&user); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"code":    http.StatusBadRequest,
-			"success": false,
-			"message": "非法数据格式",
-		})
+		response.JSON(c, http.StatusBadRequest, false, "非法数据格式")
 		return
 	}
 	list, err := user.CreateUser()
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"code":    http.StatusBadRequest,
-			"success": false,
-			"message": err.Error(),
-		})
+		response.JSON(c, http.StatusNotFound, false, err.Error())
 	} else {
-		c.AbortWithStatusJSON(http.StatusOK, gin.H{
-			"code":    http.StatusOK,
-			"success": true,
-			"data":    list,
-		})
+		response.JSON(c, http.StatusOK, true, list)
 	}
 }
 
@@ -63,17 +44,9 @@ func GetUserByID(c *gin.Context) {
 	user := &models.User{}
 	list, err := user.GetUserByID(id)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{
-			"code":    http.StatusNotFound,
-			"success": false,
-			"message": err.Error(),
-		})
+		response.JSON(c, http.StatusNotFound, false, err.Error())
 	} else {
-		c.AbortWithStatusJSON(http.StatusOK, gin.H{
-			"code":    http.StatusOK,
-			"success": true,
-			"data":    list,
-		})
+		response.JSON(c, http.StatusOK, true, list)
 	}
 }
 

@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	response "gin-demo/app/helper"
 	"net/http"
 
 	"gin-demo/app/models"
@@ -85,13 +86,8 @@ func PhotosView(c *gin.Context) {
 	query := &models.Post{}
 	post, err := query.GetPostPhotoBySlug(slug)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{
-			"code":    http.StatusNotFound,
-			"success": false,
-			"message": err.Error(),
-		})
+		response.JSON(c, http.StatusNotFound, false, err.Error())
 	} else {
-		// fmt.Println(append(post, {"test": "user"}))
-		c.JSON(http.StatusOK, post)
+		response.JSON(c, http.StatusOK, true, post)
 	}
 }
