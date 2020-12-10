@@ -12,12 +12,10 @@ type UserId struct {
 	Id uint `gorm:"primary_key;AUTO_INCREMENT"  json:"id"` // 自增id
 }
 
-type PassWord struct {
-	Password string `json:"password"`
-}
-
 type UserInfo struct {
 	Slug        string `json:"slug"`
+	Username    string `json:"username"`
+	Password    string `json:"-"`
 	IsSuperuser bool   `json:"is_superuser"`
 	// Nickname string `json:"nickname"`
 	// Email    string `json:"email"`    //邮箱
@@ -32,18 +30,16 @@ type UserInfo struct {
 
 type LoginM struct {
 	Username string `json:"username"`
-	PassWord
+	Password string `json:"password"`
 }
 
 type UserView struct {
 	UserId
-	Username string `json:"username"`
 	UserInfo
 }
 
 type User struct {
 	UserId
-	LoginM
 	UserInfo
 }
 

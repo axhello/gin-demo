@@ -1,5 +1,3 @@
-
-
 <krpano version="1.18" title="Virtual Tour" onstart="startup();">
     <include url="%SWFPATH%/plugins/webvr.xml"/>
     <plugin name="WebVR" mobilevr_fake_support="true"/>

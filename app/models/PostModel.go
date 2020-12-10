@@ -55,8 +55,6 @@ type Post struct {
 	TimeField
 }
 
-type LikesCount int64
-
 type PostQ struct {
 	Post
 	PaginationQ
