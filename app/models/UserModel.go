@@ -93,7 +93,7 @@ func (u *User) GetUserByID(id string) (UserView UserView, err error) {
 }
 
 //GetUserByName ... Fetch only one user by username
-func (u *User) GetUserByName(username string) (user *User, err error) {
+func (u *User) GetUserByName(username interface{}) (user *User, err error) {
 	user = &User{}
 	if err = config.DB.Table(u.TableName()).Where("username = ?", username).First(&user).Error; err != nil {
 		return

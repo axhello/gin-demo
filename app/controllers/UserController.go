@@ -1,14 +1,25 @@
 package controllers
 
 import (
-	"net/http"
-
 	response "gin-demo/app/helper"
 	"gin-demo/app/models"
 	"gin-demo/app/service"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
+
+func UserInfoView(c *gin.Context) {
+	user := &models.User{}
+	username, _ := c.Get("username")
+	list, err := user.GetUserByName(username)
+	if err != nil {
+		response.JSON(c, http.StatusNotFound, false, err.Error())
+	} else {
+		response.JSON(c, http.StatusOK, true, list)
+	}
+	response.JSON(c, http.StatusOK, true, user)
+}
 
 //GetUsers ... Get all users
 func GetUsers(c *gin.Context) {
