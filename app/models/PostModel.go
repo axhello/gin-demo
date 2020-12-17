@@ -3,6 +3,9 @@ package models
 import (
 	"gin-demo/app/config"
 	"time"
+
+	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type PostId struct {
@@ -60,13 +63,43 @@ type PostQ struct {
 	PaginationQ
 }
 
+//PaginationQ gin handler query binding struct
+type PaginationQ struct {
+	Size  int         `form:"size" json:"size"`
+	Page  int         `form:"page" json:"page"`
+	Data  interface{} `json:"data" comment:"muster be a pointer of slice gorm.Model"` // save pagination list
+	Total int64       `json:"total"`
+}
+
 func (Post) TableName() string {
 	return "coolpano_post"
 }
 
-func (p PostQ) Search() (list *[]Post, total uint, err error) {
+func GetTotal(p *PaginationQ, queryTx *gorm.DB, list interface{}) (int64, error) {
+	if p.Size < 1 {
+		p.Size = 10
+	}
+	if p.Page < 1 {
+		p.Page = 1
+	}
+
+	var total int64
+	err := queryTx.Count(&total).Error
+	if err != nil {
+		return 0, err
+	}
+	offset := p.Size * (p.Page - 1)
+	err = queryTx.Limit(p.Size).Offset(offset).Find(list).Error
+	if err != nil {
+		return 0, err
+	}
+	return total, err
+}
+
+func (p PostQ) Search() (list *[]Post, total int64, err error) {
 	list = &[]Post{}
-	tx := config.DB.Set("gorm:auto_preload", true).Find(&list)
+	// tx := config.DB.Set("gorm:auto_preload", true).Find(&list)
+	tx := config.DB.Preload(clause.Associations).Find(&list)
 	// if p.FromTime != "" && p.ToTime != "" {
 	// 	tx = tx.Where("`created_at` BETWEEN ? AND ?", p.FromTime, p.ToTime)
 	// }

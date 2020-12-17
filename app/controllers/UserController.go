@@ -18,7 +18,6 @@ func UserInfoView(c *gin.Context) {
 	} else {
 		response.JSON(c, http.StatusOK, true, list)
 	}
-	response.JSON(c, http.StatusOK, true, user)
 }
 
 //GetUsers ... Get all users

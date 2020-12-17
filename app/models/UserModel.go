@@ -67,7 +67,7 @@ func (u *User) CreateUser() (user *User, err error) {
 		return
 	}
 	u.Password = string(pwd)
-	u.Slug = RandStr(10)
+	u.Slug = password.CreateRandomString(10)
 	u.Sex = "0"
 	fmt.Println(u)
 	// check 用户名
