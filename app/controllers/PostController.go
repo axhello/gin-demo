@@ -14,13 +14,8 @@ func GetXml(c *gin.Context) {
 	query := &models.Post{}
 	post, err := query.GetPostWithPanoramaById(id)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{
-			"code":    http.StatusNotFound,
-			"success": false,
-			"message": err.Error(),
-		})
+		response.JSON(c, http.StatusNotFound, false, err.Error())
 	} else {
-		// c.JSON(http.StatusOK, post)
 		site_media_url := "http://localhost:8000/media"
 		c.Header("Content-Type", "application/xml")
 		c.HTML(http.StatusOK, "normal.xml", gin.H{
@@ -31,7 +26,7 @@ func GetXml(c *gin.Context) {
 
 }
 
-//GetPosts ... Get all users
+//GetPosts ... Get all Posts
 func GetPosts(c *gin.Context) {
 	// var post []models.Post
 	// err := service.GetAllPost(&post)

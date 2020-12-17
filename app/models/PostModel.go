@@ -58,8 +58,6 @@ type Post struct {
 type PostQ struct {
 	Post
 	PaginationQ
-	FromTime string `form:"from_time"` //搜索开始时间
-	ToTime   string `form:"to_time"`   //搜索结束时候
 }
 
 func (Post) TableName() string {
@@ -69,10 +67,10 @@ func (Post) TableName() string {
 func (p PostQ) Search() (list *[]Post, total uint, err error) {
 	list = &[]Post{}
 	tx := config.DB.Set("gorm:auto_preload", true).Find(&list)
-	if p.FromTime != "" && p.ToTime != "" {
-		tx = tx.Where("`created_at` BETWEEN ? AND ?", p.FromTime, p.ToTime)
-	}
-	total, err = crudAll(&p.PaginationQ, tx, list)
+	// if p.FromTime != "" && p.ToTime != "" {
+	// 	tx = tx.Where("`created_at` BETWEEN ? AND ?", p.FromTime, p.ToTime)
+	// }
+	total, err = GetTotal(&p.PaginationQ, tx, list)
 	return
 }
 
