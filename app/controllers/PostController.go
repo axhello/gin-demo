@@ -9,6 +9,21 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+//GetPosts ... Get all Posts
+func GetPosts(c *gin.Context) {
+	query := &models.PostQ{}
+	err := c.ShouldBindQuery(query) //开始绑定url-query 参数到结构体
+	if err != nil {
+		return
+	}
+	list, total, err := query.Search() //开始mysql 业务搜索查询
+	if err != nil {
+		return
+	}
+	//返回数据开始拼装分页json
+	response.PaginationJSON(c, http.StatusOK, true, list, total, query.Page, query.Size)
+}
+
 func GetXml(c *gin.Context) {
 	id := c.Params.ByName("id")
 	query := &models.Post{}
@@ -26,52 +41,15 @@ func GetXml(c *gin.Context) {
 
 }
 
-//GetPosts ... Get all Posts
-func GetPosts(c *gin.Context) {
-	// var post []models.Post
-	// err := service.GetAllPost(&post)
-	// if err != nil {
-	// 	c.JSON(http.StatusNotFound, gin.H{
-	// 		"code":    http.StatusNotFound,
-	// 		"status":  "error",
-	// 		"message": "data not found",
-	// 	})
-	// } else {
-	// 	c.JSON(http.StatusOK, post)
-	// }
-	query := &models.PostQ{}
-	err := c.ShouldBindQuery(query) //开始绑定url-query 参数到结构体
-	if err != nil {
-		return
-	}
-	list, total, err := query.Search() //开始mysql 业务搜索查询
-	if err != nil {
-		return
-	}
-	//返回数据开始拼装分页json
-	c.AbortWithStatusJSON(http.StatusOK, gin.H{
-		"success": true,
-		"data":    list,
-		"total":   total,
-		"page":    query.Page,
-		"size":    query.Size,
-	})
-}
-
 //GetPostByID ... Get the user by id
 func GetPostByID(c *gin.Context) {
 	id := c.Params.ByName("id")
 	query := &models.Post{}
 	post, err := query.GetPostById(id)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{
-			"code":    http.StatusNotFound,
-			"success": false,
-			"message": err.Error(),
-		})
+		response.JSON(c, http.StatusNotFound, false, err.Error())
 	} else {
-		// fmt.Println(append(post, {"test": "user"}))
-		c.JSON(http.StatusOK, post)
+		response.JSON(c, http.StatusOK, true, post)
 	}
 }
 

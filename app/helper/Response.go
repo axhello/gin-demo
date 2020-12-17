@@ -21,3 +21,14 @@ func JSON(c *gin.Context, httpStatus int, success bool, data interface{}) {
 	}
 
 }
+
+func PaginationJSON(c *gin.Context, httpStatus int, success bool, data interface{}, total int64, page int, size int) {
+	c.AbortWithStatusJSON(httpStatus, gin.H{
+		"code":    httpStatus,
+		"success": success,
+		"data":    data,
+		"total":   total,
+		"page":    page,
+		"size":    size,
+	})
+}

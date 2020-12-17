@@ -98,11 +98,7 @@ func GetTotal(p *PaginationQ, queryTx *gorm.DB, list interface{}) (int64, error)
 
 func (p PostQ) Search() (list *[]Post, total int64, err error) {
 	list = &[]Post{}
-	// tx := config.DB.Set("gorm:auto_preload", true).Find(&list)
-	tx := config.DB.Preload(clause.Associations).Find(&list)
-	// if p.FromTime != "" && p.ToTime != "" {
-	// 	tx = tx.Where("`created_at` BETWEEN ? AND ?", p.FromTime, p.ToTime)
-	// }
+	tx := config.DB.Preload("Author").Preload("Tags").Find(&list)
 	total, err = GetTotal(&p.PaginationQ, tx, list)
 	return
 }
@@ -110,7 +106,7 @@ func (p PostQ) Search() (list *[]Post, total int64, err error) {
 //GetAllPost Fetch all post data
 func GetAllPost(post *[]Post) (err error) {
 	// if err = config.DB.Find(&post).Scan(&result).Error; err != nil {
-	if err = config.DB.Set("gorm:auto_preload", true).Find(&post).Error; err != nil {
+	if err = config.DB.Preload(clause.Associations).Find(&post).Error; err != nil {
 		return err
 	}
 	return nil
@@ -119,7 +115,7 @@ func GetAllPost(post *[]Post) (err error) {
 //GetPostByID ... Fetch only one user by Id
 func (p Post) GetPostById(id string) (post *Post, err error) {
 	post = &Post{}
-	if err = config.DB.Set("gorm:auto_preload", true).Where("id = ?", id).First(&post).Error; err != nil {
+	if err = config.DB.Preload(clause.Associations).Where("id = ?", id).First(&post).Error; err != nil {
 		return
 	}
 	post.LikesCount = len(post.Likes)
@@ -130,7 +126,7 @@ func (p Post) GetPostById(id string) (post *Post, err error) {
 //GetPostPhotoBySlug
 func (p Post) GetPostPhotoBySlug(slug string) (post *Post, err error) {
 	post = &Post{}
-	if err = config.DB.Set("gorm:auto_preload", true).Where("slug = ?", slug).First(&post).Error; err != nil {
+	if err = config.DB.Preload(clause.Associations).Where("slug = ?", slug).First(&post).Error; err != nil {
 		return
 	}
 	post.LikesCount = len(post.Likes)
