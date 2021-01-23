@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"gin-demo/app/config"
 	"time"
 
@@ -98,18 +99,34 @@ func GetTotal(p *PaginationQ, queryTx *gorm.DB, list interface{}) (int64, error)
 
 func (p PostQ) Search() (list *[]Post, total int64, err error) {
 	list = &[]Post{}
-	tx := config.DB.Preload("Author").Preload("Tags").Find(&list)
+	// var count int64
+	tx := config.DB.Preload(clause.Associations).Find(&list)
+	// tx := config.DB.Preload("Author").Preload("Tags").Find(&list)
+	// tx := config.DB.Preload("Likes", func(db *gorm.DB) *gorm.DB {
+	// 	return db.Table("coolpano_post_likes").Count(&count)
+	// }).Find(&list)
+	for _, p := range *list {
+		p.LikesCount = 2
+		p.FavoritesCount = 2
+		fmt.Println(p.Slug)
+		// fmt.Println(&list[k])
+
+	}
+	// fmt.Println(list)
+	// count = config.DB.Model(&list).Association("Likes").Count()
+	// fmt.Println(count)
 	total, err = GetTotal(&p.PaginationQ, tx, list)
 	return
 }
 
 //GetAllPost Fetch all post data
-func GetAllPost(post *[]Post) (err error) {
+func (p Post) GetAllPost() (post *[]Post, err error) {
 	// if err = config.DB.Find(&post).Scan(&result).Error; err != nil {
+	post = &[]Post{}
 	if err = config.DB.Preload(clause.Associations).Find(&post).Error; err != nil {
-		return err
+		return
 	}
-	return nil
+	return post, err
 }
 
 //GetPostByID ... Fetch only one user by Id

@@ -9,6 +9,16 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func GetAllPosts(c *gin.Context) {
+	query := &models.Post{}
+	post, err := query.GetAllPost()
+	if err != nil {
+		response.JSON(c, http.StatusNotFound, false, err.Error())
+	} else {
+		response.JSON(c, http.StatusOK, true, post)
+	}
+}
+
 //GetPosts ... Get all Posts
 func GetPosts(c *gin.Context) {
 	query := &models.PostQ{}

@@ -29,7 +29,7 @@ func SetupRouter() *gin.Engine {
 		v1.DELETE("/user/:id", controllers.DeleteUser)
 		// PostController
 		v1.GET("/xml/:id", middleware.JWTAuth(), controllers.GetXml)
-		v1.GET("/posts", controllers.GetPosts)
+		v1.GET("/posts", controllers.GetAllPosts)
 		v1.GET("/post/:id", controllers.GetPostByID)
 		v1.GET("/photos/:slug", controllers.PhotosView)
 		v1.GET("/videos/:slug", controllers.GetPostByID)
