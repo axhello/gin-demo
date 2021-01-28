@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
 
@@ -28,6 +29,11 @@ func LoginView(c *gin.Context) {
 	// 校验密码
 	verified, _ := password.Verify(login.Password, user.Password)
 	if verified {
+		// 保存Session
+		session := sessions.Default(c)
+		session.Set("username", user.Username)
+		session.Set("userid", user.Id)
+		session.Save()
 		// 生成Token
 		tokenString, _ := token.GenerateToken(user.Username, 3*24*time.Hour)
 		response.JSON(c, http.StatusOK, true, gin.H{"token": tokenString})
@@ -37,4 +43,11 @@ func LoginView(c *gin.Context) {
 		return
 	}
 
+}
+
+func LogoutView(c *gin.Context) {
+	session := sessions.Default(c)
+	session.Clear()
+	session.Save()
+	response.JSON(c, http.StatusOK, true, gin.H{"message": "User logout successfully"})
 }

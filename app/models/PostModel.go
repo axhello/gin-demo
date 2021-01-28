@@ -23,6 +23,8 @@ type PostInfo struct {
 	Visibility     string `json:"visibility"`
 	LikesCount     int    `json:"likes_count" gorm:"-"`
 	FavoritesCount int    `json:"favorites_count" gorm:"-"`
+	Liked          bool   `json:"liked" gorm:"-"`
+	Favorited      bool   `json:"favorited" gorm:"-"`
 }
 
 type TimeField struct {
@@ -54,8 +56,8 @@ type Post struct {
 	AuthorId  int     `json:"author_id"`
 	Author    *User   `gorm:"foreignKey:author_id;" json:"author"`
 	Tags      []*Tag  `gorm:"many2many:coolpano_post_tags;" json:"tags"`
-	Likes     []*User `gorm:"many2many:coolpano_post_likes;" json:"-"`
-	Favorites []*User `gorm:"many2many:coolpano_post_favorite;" json:"-"`
+	Likes     []*User `gorm:"many2many:coolpano_post_likes;" json:"Likes"`
+	Favorites []*User `gorm:"many2many:coolpano_post_favorite;" json:"Favorites"`
 	TimeField
 }
 
@@ -138,6 +140,37 @@ func (p Post) GetPostById(id string) (post *Post, err error) {
 	post.LikesCount = len(post.Likes)
 	post.FavoritesCount = len(post.Favorites)
 	return post, err
+}
+
+// # 判断用户是否点赞此文章
+// def get_favorited(self, obj):
+// 		user = self.get_request_user()
+// 		return True if user in obj.favorite.all() else False
+
+// 判断用户是否点赞此文章
+func (p Post) GetLiked(userid interface{}, post *Post) bool {
+	if userid != nil {
+		for _, user := range post.Likes {
+			if user.Id == userid {
+				return true
+			}
+		}
+		return false
+	}
+	return false
+}
+
+// 判断用户是否收藏此文章
+func (p Post) GetFavorited(userid interface{}, post *Post) bool {
+	if userid != nil {
+		for _, user := range post.Favorites {
+			if user.Id == userid {
+				return true
+			}
+		}
+		return false
+	}
+	return false
 }
 
 //GetPostPhotoBySlug

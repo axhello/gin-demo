@@ -6,19 +6,22 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
 
 //SetupRouter ... Configure routes
 func SetupRouter() *gin.Engine {
 	r := gin.Default()
+	store := sessions.NewCookieStore([]byte("secret"))
+	r.Use(sessions.Sessions("mysession", store))
 	r.LoadHTMLFiles(filepath.Join(os.Getenv("GOPATH"), "src/gin-demo/app/templates/coolpano/normal.xml"))
 	v1 := r.Group("/api/v1")
 	{
 		// AuthController
 		v1.POST("/auth/login", controllers.LoginView)
 		v1.POST("/auth/signup", controllers.GetUsers)
-		v1.POST("/auth/logout", controllers.GetUsers)
+		v1.POST("/auth/logout", controllers.LogoutView)
 
 		// UserController
 		v1.GET("/users", controllers.GetUsers)

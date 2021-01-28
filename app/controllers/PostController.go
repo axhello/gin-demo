@@ -6,6 +6,7 @@ import (
 
 	"gin-demo/app/models"
 
+	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
 
@@ -66,8 +67,13 @@ func GetPostByID(c *gin.Context) {
 //PhotosView
 func PhotosView(c *gin.Context) {
 	slug := c.Params.ByName("slug")
+	session := sessions.Default(c)
+	userid := session.Get("userid")
 	query := &models.Post{}
 	post, err := query.GetPostPhotoBySlug(slug)
+	// fmt.Println(userid)
+	post.Liked = query.GetLiked(userid, post)
+	post.Favorited = query.GetFavorited(userid, post)
 	if err != nil {
 		response.JSON(c, http.StatusNotFound, false, err.Error())
 	} else {
