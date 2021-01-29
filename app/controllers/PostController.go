@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	response "gin-demo/app/helper"
 	"net/http"
 
@@ -36,9 +37,9 @@ func GetPosts(c *gin.Context) {
 }
 
 func GetXml(c *gin.Context) {
-	id := c.Params.ByName("id")
+	slug := c.Params.ByName("slug")
 	query := &models.Post{}
-	post, err := query.GetPostWithPanoramaById(id)
+	post, err := query.GetPostWithPanoramaBySlug(slug)
 	if err != nil {
 		response.JSON(c, http.StatusNotFound, false, err.Error())
 	} else {
@@ -72,8 +73,43 @@ func PhotosView(c *gin.Context) {
 	query := &models.Post{}
 	post, err := query.GetPostPhotoBySlug(slug)
 	// fmt.Println(userid)
-	post.Liked = query.GetLiked(userid, post)
-	post.Favorited = query.GetFavorited(userid, post)
+	post.Liked = query.GetLikedOrFavorited(userid, post.Likes)
+	post.Favorited = query.GetLikedOrFavorited(userid, post.Favorites)
+	if err != nil {
+		response.JSON(c, http.StatusNotFound, false, err.Error())
+	} else {
+		response.JSON(c, http.StatusOK, true, post)
+	}
+}
+
+//VideosView
+func VideosView(c *gin.Context) {
+	slug := c.Params.ByName("slug")
+	session := sessions.Default(c)
+	userid := session.Get("userid")
+	query := &models.Post{}
+	post, err := query.GetPostVideoBySlug(slug)
+	// fmt.Println(userid)
+	post.Liked = query.GetLikedOrFavorited(userid, post.Likes)
+	post.Favorited = query.GetLikedOrFavorited(userid, post.Favorites)
+	if err != nil {
+		response.JSON(c, http.StatusNotFound, false, err.Error())
+	} else {
+		response.JSON(c, http.StatusOK, true, post)
+	}
+}
+
+//PanoramicView
+func PanoramicView(c *gin.Context) {
+	slug := c.Params.ByName("slug")
+	session := sessions.Default(c)
+	userid := session.Get("userid")
+	query := &models.Post{}
+	post, err := query.GetPostWithPanoramaBySlug(slug)
+	// fmt.Println(userid)
+	fmt.Println(post.Likes)
+	post.Liked = query.GetLikedOrFavorited(userid, post.Likes)
+	post.Favorited = query.GetLikedOrFavorited(userid, post.Favorites)
 	if err != nil {
 		response.JSON(c, http.StatusNotFound, false, err.Error())
 	} else {

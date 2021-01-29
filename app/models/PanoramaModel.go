@@ -2,12 +2,8 @@ package models
 
 import "time"
 
-type PanoramaSlug struct {
-	Slug string `json:"slug"`
-}
-
 type Panorama struct {
-	PanoramaSlug
+	Slug      string    `json:"slug"`
 	PostId    uint      `json:"post_id"`
 	Original  string    `json:"original"`
 	Thumb     string    `json:"thumb"`
