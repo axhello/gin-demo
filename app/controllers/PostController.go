@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	response "gin-demo/app/helper"
 	"net/http"
 
@@ -71,8 +70,7 @@ func PhotosView(c *gin.Context) {
 	session := sessions.Default(c)
 	userid := session.Get("userid")
 	query := &models.Post{}
-	post, err := query.GetPostPhotoBySlug(slug)
-	// fmt.Println(userid)
+	post, err := query.GetPostWithPhotoBySlug(slug)
 	post.Liked = query.GetLikedOrFavorited(userid, post.Likes)
 	post.Favorited = query.GetLikedOrFavorited(userid, post.Favorites)
 	if err != nil {
@@ -88,8 +86,7 @@ func VideosView(c *gin.Context) {
 	session := sessions.Default(c)
 	userid := session.Get("userid")
 	query := &models.Post{}
-	post, err := query.GetPostVideoBySlug(slug)
-	// fmt.Println(userid)
+	post, err := query.GetPostWithVideoBySlug(slug)
 	post.Liked = query.GetLikedOrFavorited(userid, post.Likes)
 	post.Favorited = query.GetLikedOrFavorited(userid, post.Favorites)
 	if err != nil {
@@ -106,8 +103,6 @@ func PanoramicView(c *gin.Context) {
 	userid := session.Get("userid")
 	query := &models.Post{}
 	post, err := query.GetPostWithPanoramaBySlug(slug)
-	// fmt.Println(userid)
-	fmt.Println(post.Likes)
 	post.Liked = query.GetLikedOrFavorited(userid, post.Likes)
 	post.Favorited = query.GetLikedOrFavorited(userid, post.Favorites)
 	if err != nil {

@@ -46,8 +46,8 @@ type TimeField struct {
 type PostPanoramaView struct {
 	PostId
 	PostInfo
-	AsteroidEntry   string    `json:"asteroid_entry"`
-	Autorotate      string    `json:"autorotate"`
+	AsteroidEntry   bool      `json:"asteroid_entry"`
+	Autorotate      bool      `json:"autorotate"`
 	AutorotateSpeed string    `json:"autorotate_speed"`
 	Panorama        *Panorama `gorm:"foreignKey:post_id;" json:"panorama"`
 	TimeField
@@ -160,24 +160,62 @@ func (p Post) GetLikedOrFavorited(userid interface{}, list []*User) bool {
 	}
 	return false
 }
+func TYPE_CHOICES(t string) string {
+	switch t {
+	case "1":
+		return "photo"
+	case "2":
+		return "video"
+	case "3":
+		return "photo360"
+	default:
+		return "photo"
+	}
+}
+func STATUS_CHOICES(s string) string {
+	switch s {
+	case "1":
+		return "accepted"
+	case "2":
+		return "processing"
+	default:
+		return "accepted"
+	}
+}
+func VISIBLE_CHOICES(s string) string {
+	switch s {
+	case "1":
+		return "public"
+	case "2":
+		return "private"
+	default:
+		return "public"
+	}
+}
 
-//GetPostPhotoBySlug
-func (p Post) GetPostPhotoBySlug(slug string) (post *PostPhotosView, err error) {
+//GetPostWithPhotoBySlug
+func (p Post) GetPostWithPhotoBySlug(slug string) (post *PostPhotosView, err error) {
 	post = &PostPhotosView{}
 	if err = config.DB.Table(p.TableName()).Preload(clause.Associations).Where("slug = ?", slug).First(&post).Error; err != nil {
 		return
 	}
+	post.Type = TYPE_CHOICES(post.Type)
+	post.Status = STATUS_CHOICES(post.Status)
+	post.Visibility = VISIBLE_CHOICES(post.Visibility)
 	post.LikesCount = len(post.Likes)
 	post.FavoritesCount = len(post.Favorites)
 	return post, err
 }
 
-//GetPostVideoBySlug
-func (p Post) GetPostVideoBySlug(slug string) (post *PostVideosView, err error) {
+//GetPostWithVideoBySlug
+func (p Post) GetPostWithVideoBySlug(slug string) (post *PostVideosView, err error) {
 	post = &PostVideosView{}
 	if err = config.DB.Table(p.TableName()).Preload(clause.Associations).Where("slug = ?", slug).First(&post).Error; err != nil {
 		return
 	}
+	post.Type = TYPE_CHOICES(post.Type)
+	post.Status = STATUS_CHOICES(post.Status)
+	post.Visibility = VISIBLE_CHOICES(post.Visibility)
 	post.LikesCount = len(post.Likes)
 	post.FavoritesCount = len(post.Favorites)
 	return post, err
@@ -189,5 +227,10 @@ func (p Post) GetPostWithPanoramaBySlug(id string) (post *PostPanoramaView, err 
 	if err = config.DB.Table(p.TableName()).Preload(clause.Associations).Where("slug = ?", id).First(&post).Error; err != nil {
 		return
 	}
+	post.Type = TYPE_CHOICES(post.Type)
+	post.Status = STATUS_CHOICES(post.Status)
+	post.Visibility = VISIBLE_CHOICES(post.Visibility)
+	post.LikesCount = len(post.Likes)
+	post.FavoritesCount = len(post.Favorites)
 	return post, err
 }
