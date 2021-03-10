@@ -47,30 +47,15 @@ type TimeField struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-//PostPanoramaView struct
-type PostPanoramaView struct {
+type PostCommonView struct {
 	PostID
 	PostInfo
-	AsteroidEntry   bool      `json:"asteroid_entry"`
-	Autorotate      bool      `json:"autorotate"`
-	AutorotateSpeed string    `json:"autorotate_speed"`
-	Panorama        *Panorama `gorm:"foreignKey:post_id;" json:"panorama"`
-	TimeField
-}
-
-//PostPhotosView struct
-type PostPhotosView struct {
-	PostID
-	PostInfo
-	Photos []*Photos `gorm:"foreignKey:post_id;" json:"photos"`
-	TimeField
-}
-
-//PostVideosView struct
-type PostVideosView struct {
-	PostID
-	PostInfo
-	Videos []*Videos `gorm:"foreignKey:post_id;" json:"videos"`
+	Videos          []*Videos `gorm:"foreignKey:post_id;" json:"videos,omitempty"`
+	Photos          []*Photos `gorm:"foreignKey:post_id;" json:"photos,omitempty"`
+	Panorama        *Panorama `gorm:"foreignKey:post_id;" json:"panorama,omitempty"`
+	AsteroidEntry   bool      `json:"asteroid_entry,omitempty"`
+	Autorotate      bool      `json:"autorotate,omitempty"`
+	AutorotateSpeed string    `json:"autorotate_speed,omitempty"`
 	TimeField
 }
 
@@ -138,40 +123,6 @@ func (p PostQ) Search() (list *[]Post, total int64, err error) {
 	return
 }
 
-//GetAllPost Fetch all post data
-func (p Post) GetAllPost() (post *[]Post, err error) {
-	// if err = config.DB.Find(&post).Scan(&result).Error; err != nil {
-	post = &[]Post{}
-	if err = config.DB.Preload(clause.Associations).Find(&post).Error; err != nil {
-		return
-	}
-	return post, err
-}
-
-//GetPostByID ... Fetch only one user by Id
-func (p Post) GetPostByID(id string) (post *Post, err error) {
-	post = &Post{}
-	if err = config.DB.Preload(clause.Associations).Where("id = ?", id).First(&post).Error; err != nil {
-		return
-	}
-	post.LikesCount = len(post.Likes)
-	post.FavoritesCount = len(post.Favorites)
-	return post, err
-}
-
-//GetLikedOrFavorited 判断用户是否点赞/收藏此文章
-func (p Post) GetLikedOrFavorited(userid interface{}, list []*User) bool {
-	if userid != nil {
-		for _, user := range list {
-			if user.ID == userid {
-				return true
-			}
-		}
-		return false
-	}
-	return false
-}
-
 //TypeChoices enum
 func TypeChoices(t string) string {
 	switch t {
@@ -210,38 +161,44 @@ func VisibleChoices(s string) string {
 	}
 }
 
-//GetPostWithPhotoBySlug func
-func (p Post) GetPostWithPhotoBySlug(slug string) (post *PostPhotosView, err error) {
-	post = &PostPhotosView{}
-	if err = config.DB.Table(p.TableName()).Preload(clause.Associations).Where("slug = ?", slug).First(&post).Error; err != nil {
+//GetAllPost Fetch all post data
+func (p Post) GetAllPost() (post *[]Post, err error) {
+	// if err = config.DB.Find(&post).Scan(&result).Error; err != nil {
+	post = &[]Post{}
+	if err = config.DB.Preload(clause.Associations).Find(&post).Error; err != nil {
 		return
 	}
-	post.Type = TypeChoices(post.Type)
-	post.Status = StatusChoices(post.Status)
-	post.Visibility = VisibleChoices(post.Visibility)
+	return post, err
+}
+
+//GetPostByID ... Fetch only one user by Id
+func (p Post) GetPostByID(id string) (post *Post, err error) {
+	post = &Post{}
+	if err = config.DB.Preload(clause.Associations).Where("id = ?", id).First(&post).Error; err != nil {
+		return
+	}
 	post.LikesCount = len(post.Likes)
 	post.FavoritesCount = len(post.Favorites)
 	return post, err
 }
 
-//GetPostWithVideoBySlug func
-func (p Post) GetPostWithVideoBySlug(slug string) (post *PostVideosView, err error) {
-	post = &PostVideosView{}
-	if err = config.DB.Table(p.TableName()).Preload(clause.Associations).Where("slug = ?", slug).First(&post).Error; err != nil {
-		return
+//GetLikedOrFavorited 判断用户是否点赞/收藏此文章
+func (p Post) GetLikedOrFavorited(list []*User, userid interface{}) bool {
+	if userid != nil {
+		for _, user := range list {
+			if user.ID == userid {
+				return true
+			}
+		}
+		return false
 	}
-	post.Type = TypeChoices(post.Type)
-	post.Status = StatusChoices(post.Status)
-	post.Visibility = VisibleChoices(post.Visibility)
-	post.LikesCount = len(post.Likes)
-	post.FavoritesCount = len(post.Favorites)
-	return post, err
+	return false
 }
 
-//GetPostWithPanoramaBySlug func
-func (p Post) GetPostWithPanoramaBySlug(id string) (post *PostPanoramaView, err error) {
-	post = &PostPanoramaView{}
-	if err = config.DB.Table(p.TableName()).Preload(clause.Associations).Where("slug = ?", id).First(&post).Error; err != nil {
+//GetPostWithDataBySlug func
+func (p Post) GetPostWithDataBySlug(slug string) (post *PostCommonView, err error) {
+	post = &PostCommonView{}
+	if err = config.DB.Table(p.TableName()).Preload(clause.Associations).Where("slug = ?", slug).First(&post).Error; err != nil {
 		return
 	}
 	post.Type = TypeChoices(post.Type)

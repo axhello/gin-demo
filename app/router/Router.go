@@ -33,11 +33,8 @@ func SetupRouter() *gin.Engine {
 
 		// PostController
 		v1.GET("/xml/:slug", controllers.GetXML)
-		v1.GET("/posts", controllers.GetAllPosts)
-		v1.GET("/post/:slug", controllers.GetPostByID)
-		v1.GET("/photos/:slug", controllers.PhotosView)
-		v1.GET("/videos/:slug", controllers.VideosView)
-		v1.GET("/photo-360s/:slug", controllers.PanoramicView)
+		v1.GET("/posts", controllers.GetPosts)
+		v1.GET("/post/:slug", controllers.GetPostBySlug)
 	}
 	return r
 }
