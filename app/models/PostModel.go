@@ -9,16 +9,19 @@ import (
 	"gorm.io/gorm/clause"
 )
 
-type PostId struct {
-	Id string `json:"id"`
+// PostID struct
+type PostID struct {
+	ID string `json:"id"`
 }
 
+// Post struct
 type Post struct {
-	PostId
+	PostID
 	PostInfo
 	TimeField
 }
 
+// PostInfo struct
 type PostInfo struct {
 	Slug           string  `json:"slug"`
 	Title          string  `json:"title"`
@@ -27,7 +30,7 @@ type PostInfo struct {
 	Type           string  `json:"type"`
 	Status         string  `json:"status"`
 	Visibility     string  `json:"visibility"`
-	AuthorId       int     `json:"author_id"`
+	AuthorID       int     `json:"author_id"`
 	Author         *User   `gorm:"foreignKey:author_id;" json:"author"`
 	Tags           []*Tag  `gorm:"many2many:coolpano_post_tags;joinForeignKey:post_id;" json:"tags"`
 	Likes          []*User `gorm:"many2many:coolpano_post_likes;joinForeignKey:post_id;" json:"-"`
@@ -38,13 +41,15 @@ type PostInfo struct {
 	Favorited      bool    `json:"favorited" gorm:"-"`
 }
 
+//TimeField struct
 type TimeField struct {
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
+//PostPanoramaView struct
 type PostPanoramaView struct {
-	PostId
+	PostID
 	PostInfo
 	AsteroidEntry   bool      `json:"asteroid_entry"`
 	Autorotate      bool      `json:"autorotate"`
@@ -53,20 +58,23 @@ type PostPanoramaView struct {
 	TimeField
 }
 
+//PostPhotosView struct
 type PostPhotosView struct {
-	PostId
+	PostID
 	PostInfo
 	Photos []*Photos `gorm:"foreignKey:post_id;" json:"photos"`
 	TimeField
 }
 
+//PostVideosView struct
 type PostVideosView struct {
-	PostId
+	PostID
 	PostInfo
 	Videos []*Videos `gorm:"foreignKey:post_id;" json:"videos"`
 	TimeField
 }
 
+//PostQ struct
 type PostQ struct {
 	Post
 	PaginationQ
@@ -80,10 +88,12 @@ type PaginationQ struct {
 	Total int64       `json:"total"`
 }
 
+//TableName Post
 func (Post) TableName() string {
 	return "coolpano_post"
 }
 
+//GetTotal 获取总数
 func GetTotal(p *PaginationQ, queryTx *gorm.DB, list interface{}) (int64, error) {
 	if p.Size < 1 {
 		p.Size = 10
@@ -105,6 +115,7 @@ func GetTotal(p *PaginationQ, queryTx *gorm.DB, list interface{}) (int64, error)
 	return total, err
 }
 
+//Search 查找
 func (p PostQ) Search() (list *[]Post, total int64, err error) {
 	list = &[]Post{}
 	// var count int64
@@ -138,7 +149,7 @@ func (p Post) GetAllPost() (post *[]Post, err error) {
 }
 
 //GetPostByID ... Fetch only one user by Id
-func (p Post) GetPostById(id string) (post *Post, err error) {
+func (p Post) GetPostByID(id string) (post *Post, err error) {
 	post = &Post{}
 	if err = config.DB.Preload(clause.Associations).Where("id = ?", id).First(&post).Error; err != nil {
 		return
@@ -148,11 +159,11 @@ func (p Post) GetPostById(id string) (post *Post, err error) {
 	return post, err
 }
 
-// 判断用户是否点赞/收藏此文章
+//GetLikedOrFavorited 判断用户是否点赞/收藏此文章
 func (p Post) GetLikedOrFavorited(userid interface{}, list []*User) bool {
 	if userid != nil {
 		for _, user := range list {
-			if user.Id == userid {
+			if user.ID == userid {
 				return true
 			}
 		}
@@ -160,7 +171,9 @@ func (p Post) GetLikedOrFavorited(userid interface{}, list []*User) bool {
 	}
 	return false
 }
-func TYPE_CHOICES(t string) string {
+
+//TypeChoices enum
+func TypeChoices(t string) string {
 	switch t {
 	case "1":
 		return "photo"
@@ -172,7 +185,9 @@ func TYPE_CHOICES(t string) string {
 		return "photo"
 	}
 }
-func STATUS_CHOICES(s string) string {
+
+//StatusChoices enum
+func StatusChoices(s string) string {
 	switch s {
 	case "1":
 		return "accepted"
@@ -182,7 +197,9 @@ func STATUS_CHOICES(s string) string {
 		return "accepted"
 	}
 }
-func VISIBLE_CHOICES(s string) string {
+
+//VisibleChoices enum
+func VisibleChoices(s string) string {
 	switch s {
 	case "1":
 		return "public"
@@ -193,43 +210,43 @@ func VISIBLE_CHOICES(s string) string {
 	}
 }
 
-//GetPostWithPhotoBySlug
+//GetPostWithPhotoBySlug func
 func (p Post) GetPostWithPhotoBySlug(slug string) (post *PostPhotosView, err error) {
 	post = &PostPhotosView{}
 	if err = config.DB.Table(p.TableName()).Preload(clause.Associations).Where("slug = ?", slug).First(&post).Error; err != nil {
 		return
 	}
-	post.Type = TYPE_CHOICES(post.Type)
-	post.Status = STATUS_CHOICES(post.Status)
-	post.Visibility = VISIBLE_CHOICES(post.Visibility)
+	post.Type = TypeChoices(post.Type)
+	post.Status = StatusChoices(post.Status)
+	post.Visibility = VisibleChoices(post.Visibility)
 	post.LikesCount = len(post.Likes)
 	post.FavoritesCount = len(post.Favorites)
 	return post, err
 }
 
-//GetPostWithVideoBySlug
+//GetPostWithVideoBySlug func
 func (p Post) GetPostWithVideoBySlug(slug string) (post *PostVideosView, err error) {
 	post = &PostVideosView{}
 	if err = config.DB.Table(p.TableName()).Preload(clause.Associations).Where("slug = ?", slug).First(&post).Error; err != nil {
 		return
 	}
-	post.Type = TYPE_CHOICES(post.Type)
-	post.Status = STATUS_CHOICES(post.Status)
-	post.Visibility = VISIBLE_CHOICES(post.Visibility)
+	post.Type = TypeChoices(post.Type)
+	post.Status = StatusChoices(post.Status)
+	post.Visibility = VisibleChoices(post.Visibility)
 	post.LikesCount = len(post.Likes)
 	post.FavoritesCount = len(post.Favorites)
 	return post, err
 }
 
-//GetPostWithPanoramaBySlug
+//GetPostWithPanoramaBySlug func
 func (p Post) GetPostWithPanoramaBySlug(id string) (post *PostPanoramaView, err error) {
 	post = &PostPanoramaView{}
 	if err = config.DB.Table(p.TableName()).Preload(clause.Associations).Where("slug = ?", id).First(&post).Error; err != nil {
 		return
 	}
-	post.Type = TYPE_CHOICES(post.Type)
-	post.Status = STATUS_CHOICES(post.Status)
-	post.Visibility = VISIBLE_CHOICES(post.Visibility)
+	post.Type = TypeChoices(post.Type)
+	post.Status = StatusChoices(post.Status)
+	post.Visibility = VisibleChoices(post.Visibility)
 	post.LikesCount = len(post.Likes)
 	post.FavoritesCount = len(post.Favorites)
 	return post, err

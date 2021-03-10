@@ -30,8 +30,9 @@ func SetupRouter() *gin.Engine {
 		v1.GET("/user/:id", controllers.GetUserByID)
 		v1.PUT("/user/:id", controllers.UpdateUser)
 		v1.DELETE("/user/:id", controllers.DeleteUser)
+
 		// PostController
-		v1.GET("/xml/:slug", middleware.JWTAuth(), controllers.GetXml)
+		v1.GET("/xml/:slug", controllers.GetXML)
 		v1.GET("/posts", controllers.GetAllPosts)
 		v1.GET("/post/:slug", controllers.GetPostByID)
 		v1.GET("/photos/:slug", controllers.PhotosView)

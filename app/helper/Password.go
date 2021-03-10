@@ -15,7 +15,7 @@ import (
 	"golang.org/x/crypto/pbkdf2"
 )
 
-//CreateRandomString 随机字符串生成函数（不深入讨论）
+// CreateRandomString 随机字符串生成函数（不深入讨论）
 func CreateRandomString(len int) string {
 	var container string
 	var str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
@@ -29,8 +29,8 @@ func CreateRandomString(len int) string {
 	return container
 }
 
-//PasswordEncode 密码加密
-//参数：
+// Encode 密码加密
+// 参数：
 //		password	: 明文密码
 //		salt		: 盐
 //		iterations	: 迭代次数
@@ -63,7 +63,7 @@ func Encode(password string, salt string, iterations int) (string, error) {
 	return fmt.Sprintf("%s$%d$%s$%s", algorithm, iterations, salt, b64Hash), nil
 }
 
-//PasswordVerify 密码校验
+// Verify 密码校验
 func Verify(password string, encoded string) (bool, error) {
 	// 输入两个参数，分别是原始密码、需要校验的密钥（数据库中存储的密码）
 	// 输出校验结果（布尔值）、错误

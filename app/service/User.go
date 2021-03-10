@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"gin-demo/app/config"
 	"gin-demo/app/models"
-
-	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
 //GetAllUsers Fetch all user data

@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// JSON response
 func JSON(c *gin.Context, httpStatus int, success bool, data interface{}) {
 	if success {
 		c.AbortWithStatusJSON(httpStatus, gin.H{
@@ -22,6 +23,7 @@ func JSON(c *gin.Context, httpStatus int, success bool, data interface{}) {
 
 }
 
+// PaginationJSON response
 func PaginationJSON(c *gin.Context, httpStatus int, success bool, data interface{}, total int64, page int, size int) {
 	c.AbortWithStatusJSON(httpStatus, gin.H{
 		"code":    httpStatus,

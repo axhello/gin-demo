@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+//UserInfoView C
 func UserInfoView(c *gin.Context) {
 	user := &models.User{}
 	username, _ := c.Get("username")

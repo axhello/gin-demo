@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// JWTAuthMiddleware 基于JWT的认证中间件
+// JWTAuth 基于JWT的认证中间件
 func JWTAuth() func(c *gin.Context) {
 	return func(c *gin.Context) {
 		// 客户端携带Token有三种方式 1.放在请求头 2.放在请求体 3.放在URI

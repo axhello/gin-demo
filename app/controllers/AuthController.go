@@ -12,6 +12,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// LoginView C
 func LoginView(c *gin.Context) {
 	// 用户发送用户名和密码过来
 	var login models.LoginM
@@ -32,19 +33,18 @@ func LoginView(c *gin.Context) {
 		// 保存Session
 		session := sessions.Default(c)
 		session.Set("username", user.Username)
-		session.Set("userid", user.Id)
+		session.Set("userid", user.ID)
 		session.Save()
 		// 生成Token
 		tokenString, _ := token.GenerateToken(user.Username, 3*24*time.Hour)
 		response.JSON(c, http.StatusOK, true, gin.H{"token": tokenString})
-		return
 	} else {
 		response.JSON(c, http.StatusBadRequest, false, "密码错误")
-		return
 	}
 
 }
 
+// LogoutView C
 func LogoutView(c *gin.Context) {
 	session := sessions.Default(c)
 	session.Clear()

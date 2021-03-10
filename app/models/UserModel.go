@@ -8,10 +8,12 @@ import (
 	"gin-demo/app/config"
 )
 
-type UserId struct {
-	Id uint `gorm:"primary_key;AUTO_INCREMENT"  json:"id"` // 自增id
+// UserID struct
+type UserID struct {
+	ID uint `gorm:"primary_key;AUTO_INCREMENT"  json:"id"` // 自增id
 }
 
+//UserInfo struct
 type UserInfo struct {
 	Slug        string `json:"slug"`
 	Username    string `json:"username"`
@@ -28,21 +30,24 @@ type UserInfo struct {
 	// Website  string `json:"website"`  //网站
 }
 
+//LoginM struct
 type LoginM struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
 
+//UserView struct
 type UserView struct {
-	UserId
+	UserID
 	UserInfo
 }
 
 type User struct {
-	UserId
+	UserID
 	UserInfo
 }
 
+//TableName User
 func (User) TableName() string {
 	return "coolpano_user"
 }

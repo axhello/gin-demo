@@ -2,19 +2,22 @@ package helper
 
 import (
 	"errors"
+	"os"
 	"time"
 
 	jwt "github.com/dgrijalva/jwt-go"
 )
 
-// 私钥
-const SecretKey = "cs)jss8_%84r6%-*p1y_nj@b4&oukfpoo+^p)x3*a6nkq7s*1d"
+// SecretKey 私钥
+var SecretKey = os.Getenv("SECRET_KEY")
 
+// UserClaims struct
 type UserClaims struct {
 	Username string `json:"username"`
 	jwt.StandardClaims
 }
 
+// GenerateToken 生成Token
 func GenerateToken(username string, expireDuration time.Duration) (string, error) {
 	expire := time.Now().Add(expireDuration)
 	// 将 uid，用户角色， 过期时间作为数据写入 token 中

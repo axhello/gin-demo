@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+//GetAllPosts ... Get all Posts
 func GetAllPosts(c *gin.Context) {
 	query := &models.Post{}
 	post, err := query.GetAllPost()
@@ -35,17 +36,18 @@ func GetPosts(c *gin.Context) {
 	response.PaginationJSON(c, http.StatusOK, true, list, total, query.Page, query.Size)
 }
 
-func GetXml(c *gin.Context) {
+//GetXML C
+func GetXML(c *gin.Context) {
 	slug := c.Params.ByName("slug")
 	query := &models.Post{}
 	post, err := query.GetPostWithPanoramaBySlug(slug)
 	if err != nil {
 		response.JSON(c, http.StatusNotFound, false, err.Error())
 	} else {
-		site_media_url := "http://localhost:8000/media"
+		siteMediaURL := "http://localhost:8000/media"
 		c.Header("Content-Type", "application/xml")
 		c.HTML(http.StatusOK, "normal.xml", gin.H{
-			"site_media_url": site_media_url,
+			"site_media_url": siteMediaURL,
 			"post":           post,
 		})
 	}
@@ -56,7 +58,7 @@ func GetXml(c *gin.Context) {
 func GetPostByID(c *gin.Context) {
 	id := c.Params.ByName("id")
 	query := &models.Post{}
-	post, err := query.GetPostById(id)
+	post, err := query.GetPostByID(id)
 	if err != nil {
 		response.JSON(c, http.StatusNotFound, false, err.Error())
 	} else {
@@ -64,7 +66,7 @@ func GetPostByID(c *gin.Context) {
 	}
 }
 
-//PhotosView
+//PhotosView C
 func PhotosView(c *gin.Context) {
 	slug := c.Params.ByName("slug")
 	session := sessions.Default(c)
@@ -80,7 +82,7 @@ func PhotosView(c *gin.Context) {
 	}
 }
 
-//VideosView
+//VideosView C
 func VideosView(c *gin.Context) {
 	slug := c.Params.ByName("slug")
 	session := sessions.Default(c)
@@ -96,7 +98,7 @@ func VideosView(c *gin.Context) {
 	}
 }
 
-//PanoramicView
+//PanoramicView C
 func PanoramicView(c *gin.Context) {
 	slug := c.Params.ByName("slug")
 	session := sessions.Default(c)

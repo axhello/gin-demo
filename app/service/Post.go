@@ -3,8 +3,6 @@ package service
 import (
 	"gin-demo/app/config"
 	"gin-demo/app/models"
-
-	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
 //GetAllPost Fetch all post data
